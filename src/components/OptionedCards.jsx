@@ -1,20 +1,17 @@
 import React from 'react'
 import Card from './Card'
-import { Grid } from '@mui/material';
+import { Box } from '@mui/material';
 import Typography from '@mui/material/Typography';
 
-const OptionedCards = () => {
+const OptionedCards = ({ player }) => {
     return (
         <>
             <Typography sx={{ fontWeight: "600" }} align='center' marginY={5} variant="h5" component="div">Cartas Opcionadas</Typography>
-            <Grid container direction="row" spacing={2} justifyContent="center">
-                <Grid item lg={1}>
-                    <Card />
-                </Grid>
-                <Grid item lg={1} >
-                    <Card />
-                </Grid>
-            </Grid>
+            <Box sx={{ marginLeft: "10px" }}>
+                {player.cardsMatched.lenght === 0 ? <div></div> : player.cardsMatched.map((card) => (
+                    <Card key={card.code} card={card} />
+                ))}
+            </Box>
         </>
     )
 }

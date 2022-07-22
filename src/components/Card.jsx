@@ -1,9 +1,9 @@
 import React from 'react'
 
-const Card = () => {
+const Card = ({ card }) => {
     return (
         <>
-            <img src="http://deckofcardsapi.com/static/img/KH.png" height="200px" />
+            <img src={card.image} width="100px" alt="card" />
         </>
     )
 }

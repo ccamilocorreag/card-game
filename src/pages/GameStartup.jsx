@@ -7,11 +7,12 @@ import ModalMessage from '../components/Message';
 
 const GameStartup = () => {
 
-  const { player1, player2, handleShowModal } = useGame();
+  const { player1, player2, handleShowModal, getGame } = useGame();
   const navigate = useNavigate();
 
   const handleIniciar = () => {
     if (player1.name !== '' && player2.name !== '') {
+      getGame();
       navigate('/game');
     }
     else {
