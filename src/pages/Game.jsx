@@ -24,7 +24,7 @@ const Game = () => {
 
             <Grid container justifyContent="center" spacing={1} >
                 <Grid item lg={12} md={12} sm={12} textAlign="center">
-                    <Button variant="contained" color="success" size="large" style={{ margin: "10px" }} onClick={play} disabled={gameEnded}>
+                    <Button variant="contained" color="success" size="large" style={{ margin: "10px" }} onClick={play} disabled={gameEnded || game.remaining === 0}>
                         Jugar
                     </Button>
                     <Button variant="outlined" color="primary" size="large" style={{ margin: "10px" }} onClick={finishGame}>
@@ -42,7 +42,7 @@ const Game = () => {
                                 padding: '5px',
                                 borderRadius: '25px'
                             }}>
-                                <Typography sx={{ color: "red", visibility: gameEnded ? 'visible' : 'hidden' }} align='center' variant="h6" component="div">Juego Terminado!!</Typography>
+                                <Typography sx={{ color: "red", visibility: gameEnded || game.remaining === 0 ? 'visible' : 'hidden' }} align='center' variant="h6" component="div">Juego Terminado!!</Typography>
                                 <Typography align='center' variant="h6" component="div">Cartas restantes: {game.remaining}</Typography>
                             </Box>
                         </Grid>
