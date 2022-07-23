@@ -6,12 +6,14 @@ import axios from "axios";
 
 const GameProvider = ({ children }) => {
 
-    const initialGame = { deck_id: null, remaining: null, ended: false };
-
+    const initialGame = { deck_id: null, remaining: null };
     const [player1, setPlayer1] = useState({ id: 1, name: "", cards: [], cardsMatched: [], winner: false, lastCard: {} });
     const [player2, setPlayer2] = useState({ id: 2, name: "", cards: [], cardsMatched: [], winner: false, lastCard: {} });
     const [game, setGame] = useState(initialGame);
+    const [gameEnded, setGameEnded] = useState(false);
     const [showModal, handleModalClose, handleShowModal] = useMessage();
+    const cardPriority = ['HEARTS', 'SPADES', 'DIAMONDS', 'CLUBS'];
+
 
     const handleChangePlayerName = (id, value) => {
         if (id === '1')
@@ -33,6 +35,10 @@ const GameProvider = ({ children }) => {
     }
 
     const playGame = async () => {
+
+        const urlShuffle = `http://deckofcardsapi.com/api/deck/${game.deck_id}/shuffle/`;
+        await axios(urlShuffle);
+
         const url = `https://deckofcardsapi.com/api/deck/${game.deck_id}/draw/?count=2`;
         const { data } = await axios(url);
 
@@ -84,18 +90,21 @@ const GameProvider = ({ children }) => {
             if (resultPlayer1 || resultPlayer2) {
                 if (resultPlayer1 && !resultPlayer2) {
                     setPlayer1({ ...player1, winner: resultPlayer1 });
-                    // setGame({ ...game, ended: true })
                 } else if (!resultPlayer1 && resultPlayer2) {
                     setPlayer2({ ...player2, winner: resultPlayer2 });
-                    // setGame({ ...game, ended: true })
                 } else {
-
-
-
-                    setPlayer1({ ...player1, winner: resultPlayer1 });
-                    setPlayer2({ ...player2, winner: resultPlayer2 });
-                    // setGame({ ...game, ended: true })
+                    cardPriority.forEach(priority => {
+                        if (player1.cardsMatched.some(x => x.suit === priority)) {
+                            setPlayer1({ ...player1, winner: resultPlayer1 });
+                        } else if (player2.cardsMatched.some(x => x.suit === priority)) {
+                            setPlayer2({ ...player2, winner: resultPlayer2 });
+                        } else {
+                            setPlayer1({ ...player1, winner: resultPlayer1 });
+                            setPlayer2({ ...player2, winner: resultPlayer2 });
+                        }
+                    });
                 }
+                setGameEnded(true);
             }
         }
 
@@ -107,7 +116,7 @@ const GameProvider = ({ children }) => {
             <GameContext.Provider value={
                 {
                     player1, player2, handleChangePlayerName,
-                    game, getGame, handleFinishGame, playGame,
+                    game, getGame, handleFinishGame, playGame, gameEnded,
                     showModal, handleModalClose, handleShowModal
                 }}>
                 {children}

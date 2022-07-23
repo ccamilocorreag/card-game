@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 
 const Game = () => {
 
-    const { player1, player2, handleFinishGame, playGame, game } = useGame();
+    const { player1, player2, handleFinishGame, playGame, game, gameEnded } = useGame();
     const navigate = useNavigate();
 
     const finishGame = () => {
@@ -24,7 +24,7 @@ const Game = () => {
 
             <Grid container justifyContent="center" spacing={1} >
                 <Grid item lg={12} md={12} sm={12} textAlign="center">
-                    <Button variant="contained" color="success" size="large" style={{ margin: "10px" }} onClick={play} disabled={game.ended}>
+                    <Button variant="contained" color="success" size="large" style={{ margin: "10px" }} onClick={play} disabled={gameEnded}>
                         Jugar
                     </Button>
                     <Button variant="outlined" color="primary" size="large" style={{ margin: "10px" }} onClick={finishGame}>
@@ -42,7 +42,7 @@ const Game = () => {
                                 padding: '5px',
                                 borderRadius: '25px'
                             }}>
-                                <Typography sx={{ color: "red", visibility: game.ended ? 'visible' : 'hidden' }} align='center' variant="h6" component="div">Juego Terminado!!</Typography>
+                                <Typography sx={{ color: "red", visibility: gameEnded ? 'visible' : 'hidden' }} align='center' variant="h6" component="div">Juego Terminado!!</Typography>
                                 <Typography align='center' variant="h6" component="div">Cartas restantes: {game.remaining}</Typography>
                             </Box>
                         </Grid>
