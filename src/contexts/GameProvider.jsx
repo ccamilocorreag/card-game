@@ -30,6 +30,7 @@ const GameProvider = ({ children }) => {
 
     const handleFinishGame = () => {
         setGame(initialGame);
+        setGameEnded(false);
         setPlayer1({ id: 1, name: "", cards: [], cardsMatched: [], winner: false, lastCard: {} });
         setPlayer2({ id: 2, name: "", cards: [], cardsMatched: [], winner: false, lastCard: {} });
     }
@@ -42,19 +43,26 @@ const GameProvider = ({ children }) => {
         const url = `https://deckofcardsapi.com/api/deck/${game.deck_id}/draw/?count=2`;
         const { data } = await axios(url);
 
+        //Tomar cartas actuales de cada jugador
         const cardsPlayer1 = player1.cards;
         const cardsPlayer2 = player2.cards;
 
+        //Crear nueva carta del jugador 1
         const newCardPlayer1 = {
             code: data.cards[0].code,
             value: data.cards[0].value,
             suit: data.cards[0].suit,
             image: data.cards[0].image,
         };
-        const resultPlayer1 = evaluateGamePlayer(player1.cards, newCardPlayer1);
+        //Evaluamos si hay cartas con el mismo número del jugador1
+        const cardsMatchedPlayer1 = evaluateGamePlayer(player1.cards, newCardPlayer1);
+        //Agregamos la nueva carta al arreglo del jugador1
         cardsPlayer1.push(newCardPlayer1);
-        setPlayer1({ ...player1, cards: cardsPlayer1, cardsMatched: resultPlayer1, lastCard: newCardPlayer1 });
+        //Modificamos e estado con las cartas del jugador1
+        setPlayer1({ ...player1, cards: cardsPlayer1, cardsMatched: cardsMatchedPlayer1, lastCard: newCardPlayer1 });
 
+
+        //Se hace lo mismo con el jugador 2
         const newCardPlayer2 = {
             code: data.cards[1].code,
             value: data.cards[1].value,
@@ -65,10 +73,14 @@ const GameProvider = ({ children }) => {
         cardsPlayer2.push(newCardPlayer2);
         setPlayer2({ ...player2, cards: cardsPlayer2, cardsMatched: resultPlayer2, lastCard: newCardPlayer2 });
 
+        //Se actualiza el juego sus cartas restantes
         setGame({ ...game, remaining: data.remaining })
     }
 
     const evaluateGamePlayer = (cards, lastCard) => {
+        //Evaluar si hay cartas iguales en el mazo del jugador
+
+        //solo se evalúa a partir de la segunda carta.
         if (cards.length > 1) {
             const cardMatched = cards.find(x => x.value === lastCard.value);
             if (cardMatched) {
@@ -82,25 +94,31 @@ const GameProvider = ({ children }) => {
     }
 
     useEffect(() => {
+        //Se evalua si hay un ganador
 
         if (game.remaining > 0 && game.remaining < 52) {
-            const resultPlayer1 = player1.cardsMatched.length > 0;
-            const resultPlayer2 = player2.cardsMatched.length > 0;
+            const hasCardsMatchedPlayer1 = player1.cardsMatched.length > 0;
+            const hasCardsMatchedPlayer2 = player2.cardsMatched.length > 0;
 
-            if (resultPlayer1 || resultPlayer2) {
-                if (resultPlayer1 && !resultPlayer2) {
-                    setPlayer1({ ...player1, winner: resultPlayer1 });
-                } else if (!resultPlayer1 && resultPlayer2) {
-                    setPlayer2({ ...player2, winner: resultPlayer2 });
+            //Si uno o los dos tienen cartas emparejadas
+            if (hasCardsMatchedPlayer1 || hasCardsMatchedPlayer2) {
+                if (hasCardsMatchedPlayer1 && !hasCardsMatchedPlayer2) {
+                    setPlayer1({ ...player1, winner: hasCardsMatchedPlayer1 });
+                } else if (!hasCardsMatchedPlayer1 && hasCardsMatchedPlayer2) {
+                    setPlayer2({ ...player2, winner: hasCardsMatchedPlayer2 });
                 } else {
+                    //Se evalúa el orden de la prioridad
                     cardPriority.forEach(priority => {
-                        if (player1.cardsMatched.some(x => x.suit === priority)) {
-                            setPlayer1({ ...player1, winner: resultPlayer1 });
-                        } else if (player2.cardsMatched.some(x => x.suit === priority)) {
-                            setPlayer2({ ...player2, winner: resultPlayer2 });
-                        } else {
-                            setPlayer1({ ...player1, winner: resultPlayer1 });
-                            setPlayer2({ ...player2, winner: resultPlayer2 });
+                        if (player1.cardsMatched.some(x => x.suit === priority)
+                            && !player2.cardsMatched.some(x => x.suit === priority)) {
+                            setPlayer1({ ...player1, winner: hasCardsMatchedPlayer1 });
+                        } else if (!player1.cardsMatched.some(x => x.suit === priority)
+                            && player2.cardsMatched.some(x => x.suit === priority)) {
+                            setPlayer2({ ...player2, winner: hasCardsMatchedPlayer2 });
+                        } else if (player1.cardsMatched.some(x => x.suit === priority)
+                            && player2.cardsMatched.some(x => x.suit === priority)) {
+                            setPlayer1({ ...player1, winner: hasCardsMatchedPlayer1 });
+                            setPlayer2({ ...player2, winner: hasCardsMatchedPlayer2 });
                         }
                     });
                 }

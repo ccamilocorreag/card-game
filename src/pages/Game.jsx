@@ -12,7 +12,6 @@ const Game = () => {
     const finishGame = () => {
         handleFinishGame();
         navigate('/');
-
     }
 
     const play = () => {
