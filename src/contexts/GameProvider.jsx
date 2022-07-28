@@ -126,7 +126,7 @@ const GameProvider = ({ children }) => {
             }
         }
 
-    }, [game])
+    }, [cardPriority, game, player1, player2])
 
 
     return (
