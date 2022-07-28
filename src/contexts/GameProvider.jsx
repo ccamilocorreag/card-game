@@ -23,7 +23,7 @@ const GameProvider = ({ children }) => {
     }
 
     const getGame = async () => {
-        const url = "http://deckofcardsapi.com/api/deck/new/";
+        const url = "https://deckofcardsapi.com/api/deck/new/";
         const { data } = await axios(url);
         setGame({ deck_id: data.deck_id, remaining: data.remaining });
     };
@@ -37,7 +37,7 @@ const GameProvider = ({ children }) => {
 
     const playGame = async () => {
 
-        const urlShuffle = `http://deckofcardsapi.com/api/deck/${game.deck_id}/shuffle/`;
+        const urlShuffle = `https://deckofcardsapi.com/api/deck/${game.deck_id}/shuffle/`;
         await axios(urlShuffle);
 
         const url = `https://deckofcardsapi.com/api/deck/${game.deck_id}/draw/?count=2`;
