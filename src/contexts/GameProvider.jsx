@@ -126,7 +126,8 @@ const GameProvider = ({ children }) => {
             }
         }
 
-    }, [cardPriority, game, player1, player2])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [game, cardPriority])
 
 
     return (
